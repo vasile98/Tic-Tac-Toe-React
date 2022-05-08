@@ -80,20 +80,48 @@ import './index.css';
         });
     }
 
+    getLocation(previousStep , currentStep) {
+        
+        let location = ""
+        previousStep.squares.forEach((element , index) => {
+            if (element != currentStep.squares[index]){
+                location += currentStep.squares[index] + " in : ";
+
+                if (index < 3) {
+                    location += "(1," + (index % 3 + 1).toString() + ')'; 
+                }
+                else if (index > 3 && index < 6 ) {
+                    location += "(2," + (index % 3 + 1).toString() + ')';
+                }
+                else {
+                    location += "(3," + (index % 3 + 1).toString() + ')';
+                }
+            }
+        });
+
+        return location;
+    }
+
 
     render() {
       const history = this.state.history;
       const current = history[this.state.stepNumber];
       const winner = calculateWinner(current.squares);
-
+      let moveLocation = '';
 
       const moves = history.map((step,move) => {
+
+          if (move){
+              moveLocation = this.getLocation(history[move -1] , step);
+          }
+          
           const desc = move ? 
            'Go to move #' + move : 
            'Go to game start';
           return (
               <li key = {move}>
                   <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                  {moveLocation.length > 0  && <p> {moveLocation}</p> }
               </li>
           );
         
@@ -101,7 +129,7 @@ import './index.css';
 
       let status;
       if (winner) {
-          status = "Winner" + winner;
+          status = "Winner " + winner;
       } else {
           status = 'Next player : ' + (this.state.xIsNext ? 'X' : 'O');
       }
